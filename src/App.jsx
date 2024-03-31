@@ -2,6 +2,9 @@ import React from 'react';
 import { Layout, } from 'antd';
 const { Header, Footer, Content } = Layout;
 import Navbar from "./Components/Navbar";
+import SignUpPage from './pages/Signup';
+import LoginPage from './pages/Login';
+import { Routes, Route } from "react-router-dom";
 import './App.css'
 
 
@@ -31,7 +34,10 @@ function App() {
             marginRight: "6px",
             }}
       >
-        
+       <Routes>
+       <Route path="/sign-up" element={<SignUpPage />} />
+       <Route path="/login" element={<LoginPage />} />
+      </Routes> 
       
       </Content>
       <Footer
@@ -39,7 +45,7 @@ function App() {
           textAlign: 'center',
         }}
       >
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        BlogoLuv ©{new Date().getFullYear()} Created by Ensha
       </Footer>
     </Layout>
   );
