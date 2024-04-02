@@ -9,6 +9,7 @@ import AddPostPage from './pages/Postspages/Addpostpage';
 import PostListPage from './pages/Postspages/Postlistpage';
 import PostDetailsPage from './pages/Postspages/Postdetailpage';
 import EditPostPage from './pages/Postspages/Editpostpage';
+import ProfilePage from './pages/Profile';
 import { Routes, Route } from "react-router-dom";
 import './App.css'
 
@@ -40,13 +41,16 @@ function App() {
             }}
       >
         <Routes>
-          <Route path='/' element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/posts/create" element={<AddPostPage />} />
           <Route path="/posts/list" element={<PostListPage />} />
           <Route path="/posts/:postId" element={<PostDetailsPage />} />
           <Route path="/posts/edit/:postId" element={<EditPostPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<h3>404 - Not Found</h3>} />
+            
         </Routes> 
       
       </Content>

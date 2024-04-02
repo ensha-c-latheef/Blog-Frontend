@@ -1,9 +1,9 @@
-import Logo from "../assets/blogoluv.png";
-import { Link, useNavigate } from "react-router-dom";
-import '../App.css';
-import { Button } from "antd";
 import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "antd";
+import Logo from "../assets/blogoluv.png";
 import { AuthContext } from "../context/auth.context";
+import '../App.css';
 
 function Navbar(){
     const { isLoggedIn, logOutUser,} = useContext(AuthContext);
@@ -11,7 +11,7 @@ function Navbar(){
     const handleLogout = () => {
         logOutUser();
         navigate("/");
-      };
+    };
     return(
         <nav className="navbar">
             <Link to={'/'}><div className="logo" ><img src={Logo} height={40} width={40}/>BlogoLuv</div></Link>
@@ -25,9 +25,9 @@ function Navbar(){
                         <Link to="/profile">
                             <Button>Profile</Button>
                         </Link>
-                        <Link>
+                        <div style={{ height: "100%" }}>
                             <Button  type="primary" onClick={handleLogout}>Logout</Button>
-                        </Link>
+                        </div>
                     </>
                 ):(
                     <Link to="/sign-up">
