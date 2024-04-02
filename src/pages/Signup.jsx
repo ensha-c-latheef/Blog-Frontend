@@ -24,7 +24,7 @@ function SignUpPage() {
   return(
     <Row justify="center" align='middle'>
       <Col xs={24} sm={24} md={18} lg={16} xl={12} xxl={10}>
-        <Card title="Please sign-up to create blog">
+        <Card title="Please sign-up to create account">
           <Form
             name="signup"
             onFinish={onFinish}

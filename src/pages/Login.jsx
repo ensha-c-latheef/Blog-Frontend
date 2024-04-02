@@ -16,7 +16,7 @@ function LoginPage() {
     .then((response) => {
         storeToken(response.data.authToken);
         authenticateUser();    
-        navigate('/list');                                 
+        navigate('/posts/list');                                 
     })
     .catch((error) => {
       const errorDescription = error.response.data.message;
