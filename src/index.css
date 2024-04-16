@@ -1,4 +1,20 @@
 body {
   margin: 0;
   padding: 0;
+  font-size: 16px;
 }
+/* styling custom scrollbar - https://stackoverflow.com/questions/73055069/how-to-design-overflow-scroll-bar-specific */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+  border: none;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #d1dfe7;
+  border-radius: 4px;
+}
+

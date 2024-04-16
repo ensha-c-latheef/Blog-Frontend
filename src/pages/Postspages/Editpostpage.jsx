@@ -2,21 +2,22 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Card, Col, Form, Input, Row, Spin, Upload, Flex } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import postsService from "../../services/post.service";
 
-// const normFile = (e) => {
-//   if (Array.isArray(e)) {
-//     return e;
-//   }
-//   return e?.fileList;
-// };
+const normFile = (e) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
 
 function EditPostPage() {
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const [postData, setPostData] = useState({});
-
+  const [value, setValue] = useState('');
   const { postId } = useParams();
   const navigate = useNavigate();
 
@@ -31,9 +32,12 @@ function EditPostPage() {
   }, [postId]);
 
   const onFinish = (values) => {
-    // if (values.imageObj && values.imageObj[0]) {
-    //   values.imageUrl = values.imageObj[0].response.image;
-    // }
+    if (values.thumbImageObj && values.thumbImageObj[0]) {
+      values.thumbnailImageUrl = values.thumbImageObj[0].response.image;
+    }
+    if (values.coverImageObj && values.coverImageObj[0]) {
+      values.coverImageUrl = values.coverImageObj[0].response.image;
+    }
     postsService
       .editPostDetails(postId, values)
       .then((response) => {
@@ -58,13 +62,13 @@ function EditPostPage() {
 //       });
 //   };
 
-//   const uploadProps = {
-//     name: "image",
-//     listType: "picture",
-//     multiple: false,
-//     maxCount: 1,
-//     action: `${import.meta.env.VITE_SERVER_URL}/upload`,
-//   };
+  const uploadProps = {
+    name: "image",
+    listType: "picture",
+    multiple: false,
+    maxCount: 1,
+    action: `${import.meta.env.VITE_SERVER_URL}/upload`,
+  };
 
   if (loading) {
     return (
@@ -87,16 +91,26 @@ function EditPostPage() {
             layout="vertical"
             initialValues={postData}
           >
-            {/* <Form.Item
-              label="Upload Cake Picture"
-              name="imageObj"
+            <Form.Item
+              label="Upload Thumbnail Image"
+              name="thumbImageObj"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
               <Upload {...uploadProps}>
                 <Button icon={<UploadOutlined />}>Click to Update</Button>
               </Upload>
-            </Form.Item> */}
+            </Form.Item>
+            <Form.Item
+              label="Upload Cover Image"
+              name="coverImageObj"
+              valuePropName="fileList"
+              getValueFromEvent={normFile}
+            >
+              <Upload {...uploadProps}>
+                <Button icon={<UploadOutlined />}>Click to Update</Button>
+              </Upload>
+            </Form.Item>
             <Form.Item
               label="Title"
               name="title"
@@ -120,7 +134,7 @@ function EditPostPage() {
                 },
               ]}
             >
-              <Input.TextArea />
+              <ReactQuill theme="snow" value={value} onChange={setValue} />
             </Form.Item>
 
             {/* <Form.Item

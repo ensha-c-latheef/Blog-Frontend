@@ -2,25 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Col, Form, Input, Row, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import postsService from "../../services/post.service";
 
-// const normFile = (e) => {
-//   if (Array.isArray(e)) {
-//     return e;
-//   }
-//   return e?.fileList;
-// };
+const normFile = (e) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
 
 function AddpostPage() {
   const [errorMessage, setErrorMessage] = useState(undefined);
+  const [value, setValue] = useState('');
 
   const navigate = useNavigate();
 
   const onFinish = (values) => {
-//     if (values.imageObj && values.imageObj[0]) {
-//       values.imageUrl = values.imageObj[0].response.image;
-//     }
+    if (values.thumbImageObj && values.thumbImageObj[0]) {
+      values.thumbnailImageUrl = values.thumbImageObj[0].response.image;
+    }
+    if (values.coverImageObj && values.coverImageObj[0]) {
+      values.coverImageUrl = values.coverImageObj[0].response.image;
+    }
     postsService
       .addPost(values)
       .then((response) => {
@@ -32,13 +37,13 @@ function AddpostPage() {
       });
   };
 
-//   const uploadProps = {
-//     name: "image",
-//     listType: "picture",
-//     multiple: false,
-//     maxCount: 1,
-//     action: `${import.meta.env.VITE_SERVER_URL}/upload`,
-//   };
+  const uploadProps = {
+    name: "image",
+    listType: "picture",
+    multiple: false,
+    maxCount: 1,
+    action: `${import.meta.env.VITE_SERVER_URL}/upload`,
+  };
 
   return (
     <Row justify="center" align="middle">
@@ -50,16 +55,26 @@ function AddpostPage() {
             autoComplete="off"
             layout="vertical"
           >
-            {/* <Form.Item
-              label="Upload Cake Picture"
-              name="imageObj"
+            <Form.Item
+              label="Upload Thumbnail Image"
+              name="thumbImageObj"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
               <Upload {...uploadProps}>
                 <Button icon={<UploadOutlined />}>Click to Upload</Button>
               </Upload>
-            </Form.Item> */}
+            </Form.Item>
+            <Form.Item
+              label="Upload Cover Image"
+              name="coverImageObj"
+              valuePropName="fileList"
+              getValueFromEvent={normFile}
+            >
+              <Upload {...uploadProps}>
+                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+              </Upload>
+            </Form.Item>
             <Form.Item
               label="Post Title"
               name="title"
@@ -83,7 +98,7 @@ function AddpostPage() {
                 },
               ]}
             >
-              <Input.TextArea />
+             <ReactQuill theme="snow" value={value} onChange={setValue} />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">

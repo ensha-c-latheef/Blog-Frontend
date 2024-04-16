@@ -22,12 +22,12 @@ import { AuthContext } from "../context/auth.context";
 
 import { Link } from "react-router-dom";
 
-// const normFile = (e) => {
-//   if (Array.isArray(e)) {
-//     return e;
-//   }
-//   return e?.fileList;
-// };
+const normFile = (uploadResult) => {
+  if (Array.isArray(uploadResult)) {
+    return uploadResult;
+  }
+  return uploadResult?.fileList;
+};
 
 function ProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -50,12 +50,12 @@ function ProfilePage() {
       });
   }, []);
 
-  const onFinish = (values) => {
-    // if (values.imageObj && values.imageObj[0]) {
-    //   values.imageUrl = values.imageObj[0].response.image;
-    // }
+  const onFinish = (formSubmissionValues) => {
+    if (formSubmissionValues.imageObj && formSubmissionValues.imageObj[0]) {
+      formSubmissionValues.imageUrl = formSubmissionValues.imageObj[0].response.image;
+    }
     usersService
-      .editUserDetails(values)
+      .editUserDetails(formSubmissionValues)
       .then((response) => {
         setLoading(true);
         usersService
@@ -84,13 +84,13 @@ function ProfilePage() {
       });
   };
 
-//   const uploadProps = {
-//     name: "image",
-//     listType: "picture",
-//     multiple: false,
-//     maxCount: 1,
-//     action: `${import.meta.env.VITE_SERVER_URL}/upload`,
-//   };
+  const uploadProps = {
+    name: "image",
+    listType: "picture",
+    multiple: false,
+    maxCount: 1,
+    action: `${import.meta.env.VITE_SERVER_URL}/upload`,
+  };
 
   if (loading) {
     return (
@@ -114,7 +114,7 @@ function ProfilePage() {
             layout="vertical"
             initialValues={formInitialValues}
           >
-            {/* <Flex justify="space-between">
+            <Flex justify="space-between">
               {formInitialValues.imageUrl ? (
                 <Image
                   preview={false}
@@ -134,7 +134,7 @@ function ProfilePage() {
                   <Button icon={<UploadOutlined />}>Click to Update</Button>
                 </Upload>
               </Form.Item>
-            </Flex> */}
+            </Flex>
             <Divider />
             <Form.Item
               label="Name"

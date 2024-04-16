@@ -40,11 +40,13 @@ class PostsService {
 
   editPostDetails = (
     postId,
-    { title, content }
+    { title, content, thumbnailImageUrl, coverImageUrl }
   ) => {
     return this.api.put(`/posts/${postId}`, {
       title,
       content,
+      thumbnailImageUrl, 
+      coverImageUrl,
     });
   };
 

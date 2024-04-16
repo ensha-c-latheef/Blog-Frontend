@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { Interweave } from 'interweave';
 
 import { Link, useParams, useNavigate } from "react-router-dom";
 
@@ -94,7 +95,7 @@ function PostDetailsPage(props) {
   return (
     <Row gutter={[24, 0]} align="top">
       <Col span={16}>
-        {/* <Image width={"60%"} src={cake.imageUrl} preview={false} /> */}
+        <Image width={"60%"} src={post.coverImageUrl} preview={false} />
         <Typography.Title
           level={screens.lg ? 2 : 4}
           style={{
@@ -120,7 +121,7 @@ function PostDetailsPage(props) {
         >
           Content:
         </Typography.Title>
-        <Typography.Text>{post.content}</Typography.Text>
+        <div><Interweave content={post.content} /></div>
         <Typography.Title
           level={5}
           style={{

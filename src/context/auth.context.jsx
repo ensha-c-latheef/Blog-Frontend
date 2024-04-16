@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import authService from "../services/auth.service";
+import usersService from "../services/user.service";
 
 const AuthContext = React.createContext();
 
@@ -25,11 +26,11 @@ function AuthProviderWrapper(props) {
         // If the server verifies that the JWT token is valid  
         const user = response.data;
        // Update state variables        
+        getUserDetails();
         setIsLoggedIn(true);
-        setIsLoading(false);
-        setUser(user);        
       })
       .catch((error) => {
+        console.error(error);
         // If the server sends an error response (invalid token) 
         // Update state variables         
         setIsLoggedIn(false);
@@ -38,9 +39,11 @@ function AuthProviderWrapper(props) {
       });      
     } else {
       // If the token is not available (or is removed)
+      console.error("no token");
         setIsLoggedIn(false);
         setIsLoading(false);
-        setUser(null);      
+        setUser(null);   
+
     }   
   }
   const removeToken = () => {                   
@@ -51,14 +54,15 @@ function AuthProviderWrapper(props) {
  
   const getUserDetails = () => {    
     setIsLoading(true);
-    authService
-    .getCurrentUser()
+    usersService
+    .getUserDetails()
     .then((response) => {
       const user = response.data;
       setIsLoading(false);
       setUser(user);        
     })
     .catch((error) => {
+      console.error(error);
       // If the server sends an error response (invalid token) 
       // Update state variables         
       setIsLoggedIn(false);
