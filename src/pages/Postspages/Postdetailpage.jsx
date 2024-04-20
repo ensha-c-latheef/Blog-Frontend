@@ -172,11 +172,14 @@ function PostDetailsPage(props) {
               )
             }
             {
-              isLoggedIn && user && post.author._id === user._id ? (
+              isLoggedIn && user && post.author._id === user._id && (
                 <Button type="primary" danger onClick={deletePost} icon={<DeleteOutlined />}>
                   Delete
                 </Button>
-              ) : (
+              )
+            }
+            {
+              isLoggedIn && user && (
                 <div>
                   <Button shape="circle" danger onClick={toggleLikeToPost} icon={ hasLikedValue ? <LikeFilled /> : <LikeOutlined />} />
                   <Typography.Text style={{ marginLeft: 8 }}>
