@@ -6,8 +6,8 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import postsService from "../../services/post.service";
 // import orderServices from "../../services/order.service";
 import { AuthContext } from "../../context/auth.context";
-import { Row, Col, Image, Typography, Card, Divider, Button, List, Avatar, Flex, Rate, Form, Input, Spin, Grid } from "antd";
-import { ArrowLeftOutlined, EditOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { Row, Col, Image, Typography, Divider, Button, List, Avatar, Flex, Form, Input, Spin, Grid } from "antd";
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, LikeOutlined, LikeFilled} from "@ant-design/icons";
 
 function PostDetailsPage(props) {
   const { user, setCartItemCount, isLoggedIn } = useContext(AuthContext);
@@ -15,10 +15,12 @@ function PostDetailsPage(props) {
 
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
+  const [editingCommentId, setEditingCommentId] = useState('');
+
 
   const { postId } = useParams();
   const navigate = useNavigate();
-  const [form] = Form.useForm();
+  const [commentForm] = Form.useForm();
   const screens = Grid.useBreakpoint();
 
 
@@ -33,36 +35,6 @@ function PostDetailsPage(props) {
       })
       .catch((error) => console.log(error));
   };
-
-//   const onReviewFinish = (values) => {
-//     const { rating, comment } = values;
-//     const author = user._id;
-//     const cake = cakeId;
-//     cakeServices.addCakeReview({
-//       author,
-//       cake,
-//       comment,
-//       rating,
-//     }).then(() => {
-//       form.setFieldsValue({ comment: '', rating: 0});
-//       getCake();
-//     })
-//     .catch((error) => console.log(error));
-//   }
-
-//   const addCakeToCart = () => {
-
-//     orderServices.addCakeToCart(cakeId)
-//       .then((addResponse) => {
-//         orderServices.getCartDetails()
-//         .then((response) => {
-//           const count = response.data.cakes.length
-//           setCartItemCount(count);
-//           navigate('/cakes')
-//         })
-//       })
-//       .catch((error) => console.log(error));
-//   };
 
   useEffect(() => {
     getPost();
@@ -81,6 +53,61 @@ function PostDetailsPage(props) {
       });
   };
 
+  let hasLikedValueObj = post && user && post.likes && Array.isArray(post.likes) && (post.likes.find(like => like.author._id === user._id))
+
+  let hasLikedValue = hasLikedValueObj ? hasLikedValueObj.hasLiked : false;
+  const toggleLikeToPost= () => {
+    postsService
+      .addLikeStatusToPost({postId, hasLiked: !hasLikedValue})
+      .then(() => {
+        getPost();
+      })
+      .catch((error) => {
+        const errorDescription = error.response.data.message;
+        setErrorMessage(errorDescription);
+        setLoading(false);
+      });
+  };
+
+  
+  const deleteComment= (commentId) => {
+    postsService
+      .deleteComment(commentId)
+      .then(() => {
+        getPost();
+      })
+      .catch((error) => {
+        const errorDescription = error.response.data.message;
+        setErrorMessage(errorDescription);
+        setLoading(false);
+      });
+  };
+  const onCommentFinish = (values) => {
+    const { comment } = values;
+    postsService.addPostComment({
+      postId,
+      comment,
+    }).then(() => {
+      commentForm.setFieldsValue({ comment: '' });
+      getPost();
+    })
+    .catch((error) => console.log(error));
+  }
+
+  const onCommentEditFinish = (values) => {
+    const { editingComment } = values;
+    postsService.updateComment(editingCommentId, editingComment)
+    .then(() => {
+      setEditingCommentId('')
+      getPost();
+    })
+    .catch((error) => console.log(error));
+  }
+
+  const startEditComment = (commentId) => {
+    setEditingCommentId(commentId);
+  };
+
 
   if (loading) {
     return (
@@ -89,7 +116,7 @@ function PostDetailsPage(props) {
           <Spin size="large" />
         </Col>
       </Row>
-    );
+    )
   }
 
   return (
@@ -104,14 +131,6 @@ function PostDetailsPage(props) {
         >
           {post.title}
         </Typography.Title>
-        {/* <Typography.Title
-          level={5}
-          style={{
-            margin: 0,
-          }}
-        >
-          created by: {post.author && post.author.name}
-        </Typography.Title> */}
         <Divider />
         <Typography.Title
           level={4}
@@ -131,7 +150,7 @@ function PostDetailsPage(props) {
           created by: {post.author && post.author.name}
         </Typography.Title>
         <Divider />
-        <Row gutter={[16, 0]}>
+        <Row gutter={[16, 0]} align={"middle"}>
           <Col>
             <Link to="/posts/list">
               <Button icon={<ArrowLeftOutlined />}>
@@ -141,17 +160,19 @@ function PostDetailsPage(props) {
           </Col>
            <Col>
             {
-              isLoggedIn && post.author._id === user._id && (
+              isLoggedIn && user && post.author._id === user._id && (
                 <Link to={`/posts/edit/${postId}`}>
                   <Button type="primary" style={{marginRight:12}}icon={<EditOutlined />}>Edit Post</Button>
                 </Link>
               )
             }
             {
-              isLoggedIn && post.author._id === user._id && (
-                <Button type="primary"  onClick={deletePost} icon={<ShoppingCartOutlined />}>
+              isLoggedIn && user && post.author._id === user._id ? (
+                <Button type="primary" danger onClick={deletePost} icon={<DeleteOutlined />}>
                   Delete
                 </Button>
+              ) : (
+                <Button shape="circle" danger onClick={toggleLikeToPost} icon={ hasLikedValue ? <LikeFilled /> : <LikeOutlined />} />
               )
             }
             {errorMessage && (
@@ -161,30 +182,17 @@ function PostDetailsPage(props) {
         </Row>
 
         <Divider />
-        {/* {
-          isLoggedIn && cake.vendor._id !== user._id ? (
+        {
+          isLoggedIn && user && post.author._id !== user._id ? (
             <>
               <Form
-                name="review"
-                onFinish={onReviewFinish}
+                name="comment"
+                onFinish={onCommentFinish}
                 autoComplete="off"
                 layout="vertical"
-                form={form}
               >
-                <Typography.Title level={5}>Add Your Review:</Typography.Title>
-                <Form.Item
-                  label="Rating"
-                  name="rating"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input your rating!',
-                    },
-                  ]}
-                >
-                  <Rate />
-                </Form.Item>
-
+                <Typography.Title level={5}>Add Your Comment:</Typography.Title>
+                
                 <Form.Item
                   label="Comment"
                   name="comment"
@@ -210,49 +218,74 @@ function PostDetailsPage(props) {
           ) : null
         }
         <Typography.Title level={4}>
-          Reviews
+          Comments
         </Typography.Title>
         <List
           bordered
           itemLayout="horizontal"
-          dataSource={cake.reviews}
-          renderItem={(item, index) => (
+          dataSource={post.comments}
+          renderItem={(item, index) => {
+            if (editingCommentId === item._id) {
+              return (
+                <Form
+                name="edit-comment"
+                onFinish={onCommentEditFinish}
+                autoComplete="off"
+                layout="vertical"
+                key={editingCommentId}
+                style={{ padding: '12px 24px' }}
+              >
+                <Typography.Title level={5}>Edit Your Comment:</Typography.Title>
+                
+                <Form.Item
+                  label="Comment"
+                  name="editingComment"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your comment!',
+                    },
+                  ]}
+                  initialValue={item.comment}
+                >
+                  <Input.TextArea rows={5}/>
+                </Form.Item>
+
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
+                    Update comment
+                  </Button>
+                </Form.Item>
+                <Divider />
+              </Form>    
+              )
+            }
+            return (
             <List.Item key={item._id}>
               <List.Item.Meta
                 avatar={
                   <Avatar src={item.author.imageUrl ? item.author.imageUrl : `https://api.dicebear.com/7.x/miniavs/svg?seed=${index}`} />
                 }
-                title={<Flex align="baseline" justify="flex-start" gap={8}><Typography.Title level={5}>{item.author.name}</Typography.Title><Rate value={item.rating} disabled /><Typography.Text type="secondary">{new Date(item.createdAt).toLocaleString('en-UK')}</Typography.Text></Flex>}
+                title={<Flex align="center" justify="flex-start" gap={8}><Typography.Title level={5} style={{margin: 0}} >{item.author.name}</Typography.Title><Typography.Text type="secondary">{new Date(item.createdAt).toLocaleString('en-UK')}</Typography.Text></Flex>}
                 description={item.comment}
               />
+              {
+                isLoggedIn && user && item.author._id === user._id && (
+                <Button danger shape="circle" onClick={() => {deleteComment(item._id)}} icon={<DeleteOutlined />} />
+              )
+              }
+              {
+                isLoggedIn && user && item.author._id === user._id && (
+                <Button type="primary" ghost shape="circle" style={{marginLeft:10}} onClick={() => {startEditComment(item._id)}} icon={<EditOutlined />} />
+              )
+              }
             </List.Item>
-          )}
+          )
+        }
+        
+        }
         />
         <Divider />
-      </Col>
-      <Col span={8}>
-        <Card>
-          <Typography.Text>Price:</Typography.Text>
-          <Typography.Title
-            level={screens.lg ? 3 : 5}
-            style={{
-              margin: 0,
-            }}
-          >
-            {cake.price} €
-          </Typography.Title>
-        </Card>
-        <Card>
-          <Typography.Text>Preperation time:</Typography.Text>
-          <Typography.Title
-            level={screens.lg ? 3 : 5}
-            style={{
-              margin: 0,
-            }}
-          >
-            {cake.preperationTime} hrs.
-          </Typography.Title>
-        </Card> */}
       </Col>
     </Row>
   ); 

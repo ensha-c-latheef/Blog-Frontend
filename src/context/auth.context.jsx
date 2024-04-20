@@ -13,7 +13,8 @@ function AuthProviderWrapper(props) {
   const storeToken = (token) => {      
     localStorage.setItem('authToken', token);
   }
-  const authenticateUser = () => {           
+  const authenticateUser = () => {   
+    setIsLoading(true);        
     // Get the stored token from the localStorage
     const storedToken = localStorage.getItem('authToken');
     
@@ -39,7 +40,7 @@ function AuthProviderWrapper(props) {
       });      
     } else {
       // If the token is not available (or is removed)
-      console.error("no token");
+      // console.error("no token");
         setIsLoggedIn(false);
         setIsLoading(false);
         setUser(null);   

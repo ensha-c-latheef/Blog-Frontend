@@ -48,20 +48,6 @@ function EditPostPage() {
         setErrorMessage(errorDescription);
       });
   };
-
-//   const deleteCake = () => {
-//     cakeServices
-//       .deleteCake(cakeId)
-//       .then(() => {
-//         navigate("/cakes");
-//       })
-//       .catch((error) => {
-//         const errorDescription = error.response.data.message;
-//         setErrorMessage(errorDescription);
-//         setLoading(false);
-//       });
-//   };
-
   const uploadProps = {
     name: "image",
     listType: "picture",
@@ -136,39 +122,11 @@ function EditPostPage() {
             >
               <ReactQuill theme="snow" value={value} onChange={setValue} />
             </Form.Item>
-
-            {/* <Form.Item
-              label="Cake Price"
-              name="price"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input cake price!",
-                },
-              ]}
-            >
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item
-              label="Cake Preparation Time"
-              name="preperationTime"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input cake preperation Time!",
-                },
-              ]}
-            >
-              <Input type="number" />
-            </Form.Item> */}
-            <Flex align="center" gap={16}>
-              <Button type="primary" htmlType="submit">
-                Save Changes
-              </Button>
-              {/* <Button type="primary" danger onClick={deleteCake}>
-                Delete Cake
-              </Button> */}
-            </Flex>
+              <Flex align="center" gap={16}>
+                <Button type="primary" htmlType="submit">
+                  Save Changes
+                </Button>
+              </Flex>
           </Form>
           {errorMessage && (
             <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>

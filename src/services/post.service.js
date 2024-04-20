@@ -54,19 +54,30 @@ class PostsService {
     return this.api.delete(`/posts/${postId}`);
   };
 
-//   addCakeReview = ({
-//     author,
-//     cake,
-//     comment,
-//     rating
-//   }) => {
-//     return this.api.post(`/cakes/${cake}/comment`, {
-//       author,
-//       cake,
-//       comment,
-//       rating
-//     });
-//   };
+  deleteComment = (commentId) => {
+    return this.api.delete(`/posts/comments/${commentId}`);
+  };
+  addPostComment = ({
+    postId,
+    comment,
+  }) => {
+    return this.api.post(`/posts/${postId}/comment`, {
+      comment,
+    });
+  };
+
+  updateComment = (commentId, comment) => {
+    return this.api.put(`/posts/comments/${commentId}`, { comment });
+  };
+
+  addLikeStatusToPost = ({
+    postId,
+    hasLiked,
+  }) => {
+    return this.api.post(`/posts/${postId}/like`, {
+      hasLiked,
+    });
+  };
 }
 
 // Create one instance object
