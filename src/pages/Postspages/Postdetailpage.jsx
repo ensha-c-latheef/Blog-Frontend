@@ -52,8 +52,9 @@ function PostDetailsPage(props) {
         setLoading(false);
       });
   };
+  let likesArr = post && user && post.likes && Array.isArray(post.likes) ? post.likes : [] 
 
-  let hasLikedValueObj = post && user && post.likes && Array.isArray(post.likes) && (post.likes.find(like => like.author._id === user._id))
+  let hasLikedValueObj = likesArr.find(like => like.author._id === user._id);
 
   let hasLikedValue = hasLikedValueObj ? hasLikedValueObj.hasLiked : false;
   const toggleLikeToPost= () => {
@@ -141,14 +142,18 @@ function PostDetailsPage(props) {
           Content:
         </Typography.Title>
         <div><Interweave content={post.content} /></div>
-        <Typography.Title
-          level={5}
-          style={{
-            margin: 0,
-          }}
-        >
-          created by: {post.author && post.author.name}
-        </Typography.Title>
+        {
+          post.author && post.author.name ? (
+            <Typography.Title
+              level={5}
+              style={{
+                margin: 0,
+              }}
+            >
+              created by: {post.author && post.author.name}
+            </Typography.Title>
+          ) : null
+        }
         <Divider />
         <Row gutter={[16, 0]} align={"middle"}>
           <Col>
@@ -172,7 +177,12 @@ function PostDetailsPage(props) {
                   Delete
                 </Button>
               ) : (
-                <Button shape="circle" danger onClick={toggleLikeToPost} icon={ hasLikedValue ? <LikeFilled /> : <LikeOutlined />} />
+                <div>
+                  <Button shape="circle" danger onClick={toggleLikeToPost} icon={ hasLikedValue ? <LikeFilled /> : <LikeOutlined />} />
+                  <Typography.Text style={{ marginLeft: 8 }}>
+                    {`${likesArr.length} Likes`}
+                  </Typography.Text>
+                </div>
               )
             }
             {errorMessage && (
