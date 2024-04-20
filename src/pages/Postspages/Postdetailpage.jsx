@@ -178,16 +178,16 @@ function PostDetailsPage(props) {
                 </Button>
               )
             }
-            {
-              isLoggedIn && user && (
-                <div>
-                  <Button shape="circle" danger onClick={toggleLikeToPost} icon={ hasLikedValue ? <LikeFilled /> : <LikeOutlined />} />
-                  <Typography.Text style={{ marginLeft: 8 }}>
-                    {`${likesArr.length} Likes`}
-                  </Typography.Text>
-                </div>
-              )
-            }
+            <div>
+              {
+                isLoggedIn && user && (
+                    <Button shape="circle" danger onClick={toggleLikeToPost} icon={ hasLikedValue ? <LikeFilled /> : <LikeOutlined />} />
+                )
+              }
+              <Typography.Text style={{ marginLeft: 8 }}>
+                {`${likesArr.length} Likes`}
+              </Typography.Text>
+            </div>
             {errorMessage && (
             <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>
           )}
